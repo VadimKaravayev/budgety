@@ -32,7 +32,20 @@ var UIController = (function() {
 // the controller distributes work among other modules. 
 var controller = (function(budgetCtrl, UICtrl) {
     
-    let DOMStrings = UICtrl.getDOMStrings();
+    let setupEventListeners = function() {
+        
+        let DOMStrings = UICtrl.getDOMStrings();
+        
+        document.querySelector(DOMStrings.inputBtn).addEventListener("click", ctrlAddItem);
+    
+        document.addEventListener("keypress", (event)=> {
+            if (event.keyCode === 13 || event.which === 13) {
+                ctrlAddItem();
+            }
+        });
+    }
+    
+    
     
     var ctrlAddItem = function() {
         
@@ -45,16 +58,16 @@ var controller = (function(budgetCtrl, UICtrl) {
         // 3. Add the item to the UI
         
         // 4. Calculate the budget
-        
-        
+         
     }
     
-    document.querySelector(DOMStrings.inputBtn).addEventListener("click", ctrlAddItem);
-    
-    document.addEventListener("keypress", (event)=> {
-        if (event.keyCode === 13 || event.which === 13) {
-            ctrlAddItem();
+    return {
+        init: function() {
+            console.log("Application is started");
+            setupEventListeners();
         }
-    });
+    }
     
 })(budgetController, UIController);
+
+controller.init();
