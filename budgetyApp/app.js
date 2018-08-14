@@ -1,20 +1,20 @@
 // Module pattern is used in this app.
 
-var budgetController = (function () {
+let budgetController = (function () {
     
-    var Expense = function (id, description, value) {
+    let Expense = function (id, description, value) {
         this.id = id;
         this.description = description;
         this.value = value;
     };
     
-    var Income = function (id, description, value) {
+    let Income = function (id, description, value) {
         this.id = id;
         this.description = description;
         this.value = value;
     };
     
-    var calculateTotal = function(type) {
+    let calculateTotal = function(type) {
         var sum = 0;
         data.allItems[type].forEach((cur)=> {
             sum += cur.value;
@@ -23,7 +23,7 @@ var budgetController = (function () {
     };
     
     // small database
-    var data = {
+    let data = {
         allItems: {
             exp: [],
             inc: []
@@ -81,7 +81,7 @@ var budgetController = (function () {
     
 })();
 
-var UIController = (function() {
+let UIController = (function() {
     
     let DOMStrings = {
         inputType: ".add__type",
@@ -89,7 +89,16 @@ var UIController = (function() {
         inputValue: ".add__value",
         inputBtn: ".add__btn",
         incomeContainer: ".income__list",
-        expensesContainer: ".expenses__list"
+        expensesContainer: ".expenses__list",
+        budgetLabel: ".budget__value",
+        incomeLabel: ".budget__income--value",
+        expensesLabel: ".budget__expenses--value",
+        percentageLabel: ".budget__expenses--percentage"
+        
+    };
+    
+    let displayInField = function(field, content) {
+        document.querySelector(field).textContent = content; 
     };
     
     return {
@@ -123,6 +132,14 @@ var UIController = (function() {
             
             // Insert HTML into DOM
             document.querySelector(element).insertAdjacentHTML("beforeend", newHtml);
+            
+        },
+        
+        displayBudget: function(obj) {
+            displayInField(DOMStrings.budgetLabel, obj.budget);
+            displayInField(DOMStrings.incomeLabel, obj.totalInc);
+            displayInField(DOMStrings.expensesLabel, obj.totalExp);
+            displayInField(DOMStrings.percentageLabel, obj.percentage > 0 ? obj.percentage + '%' : '---');
             
         },
         
@@ -173,7 +190,7 @@ var controller = (function(budgetCtrl, UICtrl) {
         let budget = budgetCtrl.getBudget();
         
         // 5. Display on UI
-        console.log(budget);
+        UICtrl.displayBudget(budget);
     };
     
     
@@ -202,6 +219,10 @@ var controller = (function(budgetCtrl, UICtrl) {
     return {
         init: function() {
             console.log("Application is started");
+            UICtrl.displayBudget({budget: 0,
+                totalInc: 0,
+                totalExp: 0,
+                percentage: -1});
             setupEventListeners();
         }
     }
