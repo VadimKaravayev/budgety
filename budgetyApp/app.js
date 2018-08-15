@@ -93,7 +93,8 @@ let UIController = (function() {
         budgetLabel: ".budget__value",
         incomeLabel: ".budget__income--value",
         expensesLabel: ".budget__expenses--value",
-        percentageLabel: ".budget__expenses--percentage"
+        percentageLabel: ".budget__expenses--percentage",
+        container: ".container"
         
     };
     
@@ -117,11 +118,11 @@ let UIController = (function() {
             if (Object.is(type, "inc")) {
                 element = DOMStrings.incomeContainer;
                 
-                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"</i></button></div></div></div>';
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"</i></button></div></div></div>';
             } else if (Object.is(type, "exp")) {
                 element = DOMStrings.expensesContainer;
                 
-                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
             
             // Replace placeholder text with some actual data
@@ -179,6 +180,8 @@ var controller = (function(budgetCtrl, UICtrl) {
                 ctrlAddItem();
             }
         });
+        
+        document.querySelector(DOMStrings.container).addEventListener('click', ctrlDeleteItem);
     };
     
     var updateBudget = function() {
@@ -211,9 +214,30 @@ var controller = (function(budgetCtrl, UICtrl) {
             UICtrl.clearFields();
         }
         
-        
         updateBudget();
          
+    };
+    
+    var ctrlDeleteItem = function(event) {
+        let itemId, splitId, type, id;
+        let node = event.target;
+       
+        while (!(node.id.includes('inc') || node.id.includes('exp'))) {
+            node = node.parentNode;
+        }
+        itemId = node.id;
+        
+        if (itemId) {
+            splitId = itemId.split('-');
+            type = splitId[0];
+            id = splitId[1];
+        }
+        
+        //1. Delete the item from the data structure
+        
+        // 2. Delete the item from the UI
+        
+        // 3. Update and show the new budget
     };
     
     return {
