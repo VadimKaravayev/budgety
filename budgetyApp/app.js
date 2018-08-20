@@ -186,6 +186,7 @@ let UIController = (function() {
             
         }, 
         
+        /*
         addListItem: function(obj, type) {
             let html, newHtml, element;
             // create HTML string with placeholder text
@@ -207,6 +208,27 @@ let UIController = (function() {
             
             // Insert HTML into DOM
             document.querySelector(element).insertAdjacentHTML("beforeend", newHtml);
+            
+        },
+        */
+        
+        addListItem: function(obj, type) {
+            let html, element, divPecentage = '';
+            
+            // create HTML string with placeholder text
+            if (Object.is(type, "inc")) {
+                element = DOMStrings.incomeContainer;
+                
+            } else if (Object.is(type, "exp")) {
+                element = DOMStrings.expensesContainer;
+                divPecentage = '<div class="item__percentage">21%</div>';
+                
+            }
+            
+            html = `<div class="item clearfix" id="${type}-${obj.id}"><div class="item__description">${obj.description}</div><div class="right clearfix"><div class="item__value">${formatNumber(obj.value, type)}</div>${divPecentage}<div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`;
+            
+            // Insert HTML into DOM
+            document.querySelector(element).insertAdjacentHTML("beforeend", html);
             
         },
         
