@@ -1,6 +1,6 @@
 // Module pattern is used in this app.
 
-let budgetController = (function () {
+const budgetController = (function () {
     
     let Expense = function (id, description, value) {
         this.id = id;
@@ -13,7 +13,6 @@ let budgetController = (function () {
         if (totalIncome > 0) {
             this.percentage = Math.round((this.value / totalIncome * 100));    
         }
-        
     };
     
     Expense.prototype.getPercentage = function() {
@@ -97,11 +96,10 @@ let budgetController = (function () {
             });
         },
         
-        getPercentages: function() {
-            let allPerc = data.allItems.exp.map((cur)=> {
+        getPercentages: function() {            
+            return data.allItems.exp.map((cur)=> {
                 return cur.getPercentage();
             });
-            return allPerc;
         },
         
         getBudget: function() {
@@ -120,7 +118,7 @@ let budgetController = (function () {
     
 })();
 
-let UIController = (function() {
+const UIController = (function() {
     
     let DOMStrings = {
         inputType: ".add__type",
@@ -143,16 +141,16 @@ let UIController = (function() {
         document.querySelector(field).textContent = content; 
     };
     
-      let formatNumber = function(num, type) {
-        num = Math.abs(num);
-        num = num.toFixed(2);
-        let numSplit = num.split('.');
-        let int = numSplit[0];
+    let formatNumber = function(num, type) {
+        num = Math.abs(num).toFixed(2);
+        
+        let [int, dec] = num.split('.');
+        
         if (int.length > 3) {
-            int = int.substr(0, int.length - 3) + "," + int.substr(int.length - 3, 3);
+            int = `${int.substr(0, int.length - 3)},${int.substr(int.length - 3, 3)}`;
         }
-        let dec = numSplit[1];
-        return (type === "exp" ? "-" : "+") + " " + int + "." + dec;
+
+        return `${type === "exp" ? "-" : "+"} ${int}.${dec}`;
     };
     
     let nodeListForeach = function(list, callback) {
@@ -186,43 +184,15 @@ let UIController = (function() {
             
         }, 
         
-        /*
-        addListItem: function(obj, type) {
-            let html, newHtml, element;
-            // create HTML string with placeholder text
-            if (Object.is(type, "inc")) {
-                element = DOMStrings.incomeContainer;
-                
-                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"</i></button></div></div></div>';
-            } else if (Object.is(type, "exp")) {
-                element = DOMStrings.expensesContainer;
-                
-                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
-            }
-            
-            // Replace placeholder text with some actual data
-            newHtml = html
-                .replace("%id%", obj.id)
-                .replace("%description%", obj.description)
-                .replace("%value%", formatNumber(obj.value, type));
-            
-            // Insert HTML into DOM
-            document.querySelector(element).insertAdjacentHTML("beforeend", newHtml);
-            
-        },
-        */
-        
         addListItem: function(obj, type) {
             let html, element, divPecentage = '';
             
-            // create HTML string with placeholder text
             if (Object.is(type, "inc")) {
                 element = DOMStrings.incomeContainer;
                 
             } else if (Object.is(type, "exp")) {
                 element = DOMStrings.expensesContainer;
-                divPecentage = '<div class="item__percentage">21%</div>';
-                
+                divPecentage = '<div class="item__percentage">21%</div>';    
             }
             
             html = `<div class="item clearfix" id="${type}-${obj.id}"><div class="item__description">${obj.description}</div><div class="right clearfix"><div class="item__value">${formatNumber(obj.value, type)}</div>${divPecentage}<div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`;
@@ -253,7 +223,7 @@ let UIController = (function() {
         displayMonth: function() {
             let now = new Date();
             let year = now.getFullYear();
-            let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             let month = months[now.getMonth()];
             document.querySelector(DOMStrings.dateLabel).textContent = month + " " + year;
         },
@@ -282,7 +252,7 @@ let UIController = (function() {
 })();
 
 // the controller distributes work among other modules. 
-var controller = (function(budgetCtrl, UICtrl) {
+const controller = (function(budgetCtrl, UICtrl) {
     
     let setupEventListeners = function() {
         
@@ -344,9 +314,8 @@ var controller = (function(budgetCtrl, UICtrl) {
         
         updatePercentages();
     };
-    
+   
     let ctrlDeleteItem = function(event) {
-        let splitId, type, id;
         let node = event.target;
        
         while (!(node.id.includes('inc') || node.id.includes('exp'))) {
@@ -355,16 +324,12 @@ var controller = (function(budgetCtrl, UICtrl) {
         let itemId = node.id;
         
         if (itemId) {
-            splitId = itemId.split('-');
-            type = splitId[0];
-            id = parseInt(splitId[1]);
+            let [type, id] = itemId.split('-');
+            id = parseInt(id);
             
             budgetCtrl.deleteItem(type, id);
-        
             UICtrl.deleteListItem(itemId);
-        
             updateBudget();
-            
             updatePercentages();
         }
     };
